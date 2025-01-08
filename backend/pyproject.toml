@@ -1,0 +1,16 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "A simple backend written with FastAPI, uv"
+readme = "../README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.6",
+    "uvicorn>=0.34.0",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.4",
+    "pytest-cov>=6.0.0",
+]
