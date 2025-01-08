@@ -41,7 +41,7 @@ jobs:
           uv run pylint app tests --exit-zero 2>&1 | tee >(grep 'rated at' | awk '{print $7}' | cut -d'/' -f1 > pylint_grade.txt)
           SCORE=$(cat pylint_grade.txt)
           COLOR=$(../.github/get_color.sh $SCORE)
-          curl "https://img.shields.io/badge/pylint-$SCORE-$COLOR" -o ../.github/pylint-badge.svg
+          curl "https://img.shields.io/badge/pylint_grade-$SCORE-$COLOR" -o ../.github/pylint-badge.svg
 
       - name: Run tests with coverage & badge
         run: |

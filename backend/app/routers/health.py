@@ -8,4 +8,4 @@ router = APIRouter()
 @router.get("/health", tags=["health"])
 async def health():
     """Health check"""
-    return {"status": "ok"}
+    return {"status": "okey"}
