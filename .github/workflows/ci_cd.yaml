@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint-and-format:
-    name: Lint and Format
+    name: code QA and unittest
     runs-on: ubuntu-latest
 
     steps:
@@ -32,13 +32,17 @@ jobs:
           cd backend
           uv sync --all-extras --dev
 
-      - name: Run code qa
+      - name: Run code qa & generate badge
         run: |
           cd backend
-          uv run pylint app tests --exit-zero
+          uv run pylint app tests --exit-zero 2>&1 | tee >(grep 'rated at' | awk '{print $7}' | cut -d'/' -f1 > ../.github/pylint_grade.txt)
+          SCORE=$(cat ../.github/pylint_grade.txt)
+          COLOR=$(sh ../.github/get_color.sh $SCORE)
+          curl "https://img.shields.io/badge/pylint-$SCORE-$COLOR" -o ../.github/pylint-badge.svg
 
-      - name: Run tests with coverage
+      - name: Run tests with coverage & badge
         run: |
           cd backend
-          uv run pytest --cov
+          uv run pytest --cov=app --cov-report=xml tests
+          genbadge coverage -i coverage.xml -o ../.github/coverage.svg
             
