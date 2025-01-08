@@ -32,17 +32,10 @@ jobs:
           cd backend
           uv sync --all-extras --dev
 
-      - name: Run code qa with readme update
-        uses: kgpl/gh-pylint@v1
-        with:
-          python-version: 3.13
-          package-path: |
-            app
-            tests
-          requirements-path: backend/uv.lock
-          readme-path: README.md
-          fail-below: 7
-      
+      - name: Run code qa
+        run: |
+          uv run pylint app tests
+
       - name: Run tests with coverage
         run: |
           uv run pytest --cov
