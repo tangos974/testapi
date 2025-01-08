@@ -1,15 +1,10 @@
+# Stage 1: OS-level dependencies and tools (i..e uv and ca-certificates)
 FROM python:3.13-alpine3.21 AS builder
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install essential tools and Python deps
+# Install needed tools and minimal Python3 packages
 RUN apk add --no-cache \
-    build-base \
     ca-certificates \
-    curl \
-    && pip install --no-cache-dir --upgrade pip
+    curl
 
 # Install uv
 ADD https://astral.sh/uv/0.5.15/install.sh /uv-installer.sh
@@ -17,20 +12,29 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh \
     && mv /root/.local/bin/uv /usr/local/bin/uv \
     && chmod +x /usr/local/bin/uv
 
-# Reduce size
-RUN apk del build-base \
-    && rm -rf /tmp/* /var/tmp/* /lib/apk/db/*
+# Remove curl needed only for uv instal
+RUN apk del curl
 
 # Non-root user
 RUN adduser -D appuser
-USER appuser
-
 WORKDIR /home/appuser
 
-# Copy and install uv dependencies
-COPY --chown=appuser:appuser uv.lock .
-COPY --chown=appuser:appuser pyproject.toml .
+# Stage 2: Code-level dependencies
+FROM builder AS dependencies
+
+# Install dependencies as root
+COPY uv.lock pyproject.toml ./
 RUN uv sync --frozen
+
+# Was needed for secure & trusted uv installs
+RUN apk del ca-certificates
+
+# Stage 3: Runtime
+FROM dependencies AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+USER appuser
 
 COPY ./app ./app
 
