@@ -1,0 +1,41 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - .github/workflows/deploy.yaml
+
+jobs:
+    lint-and-format:
+        name: Lint and Format
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: '3.13'
+
+            - name: Install uv dependencies
+              run: |
+                  cd backend
+                  pip install -r uv.lock
+                  pip install -r uv.lock.dev
+
+            - name: Lint Code
+              uses: kgpl/gh-pylint@v1
+              with:
+                  python-version: 3.13
+                  package-path: |
+                    app
+                    tests
+                  requirements-path: backend/uv.lock
+                  readme-path: README.md
+                  fail-below: 7
+                  
