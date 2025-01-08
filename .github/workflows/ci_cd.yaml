@@ -37,7 +37,7 @@ jobs:
           cd backend
           uv run pylint app tests --exit-zero 2>&1 | tee >(grep 'rated at' | awk '{print $7}' | cut -d'/' -f1 > ../.github/pylint_grade.txt)
           SCORE=$(cat ../.github/pylint_grade.txt)
-          COLOR=$(sh ../.github/get_color.sh $SCORE)
+          COLOR=$(../.github/get_color.sh $SCORE)
           curl "https://img.shields.io/badge/pylint-$SCORE-$COLOR" -o ../.github/pylint-badge.svg
 
       - name: Run tests with coverage & badge
