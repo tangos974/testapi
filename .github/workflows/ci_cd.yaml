@@ -77,27 +77,27 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Configure Docker to use gcloud
-        run: gcloud auth configure-docker $GCP_REGION-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev
 
       - name: Build Docker image
         run: |
-          docker build -t $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest .
+          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest .
         
       - name: Scan Docker image for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest
+          image-ref: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest
           severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
           format: table
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest
+          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy $APP_NAME \
-            --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest \
-            --region $GCP_REGION \
+          gcloud run deploy ${{ vars.APP_NAME }} \
+            --image ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest \
+            --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --allow-unauthenticated
