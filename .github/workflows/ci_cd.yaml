@@ -43,6 +43,11 @@ jobs:
           COLOR=$(../.github/get_color.sh $SCORE)
           curl "https://img.shields.io/badge/pylint_grade-$SCORE-$COLOR" -o ../.github/pylint-badge.svg
 
+      - name: Run checkov on entire repo
+        run: |
+          cd backend
+          uv run checkov .. --skip-check CKV_DOCKER_4,CKV_GCP_84
+
       - name: Run tests with coverage & badge
         run: |
           cd backend
@@ -54,3 +59,45 @@ jobs:
         with:
           commit_message: "Update badges"
           file_pattern: "*.svg"
+
+  build-and-scan:
+    name: Build, scan and deploy
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Configure Docker to use gcloud
+        run: gcloud auth configure-docker $GCP_REGION-docker.pkg.dev
+
+      - name: Build Docker image
+        run: |
+          docker build -t $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest .
+        
+      - name: Scan Docker image for vulnerabilities with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest
+          severity: CRITICAL,HIGH,MEDIUM,LOW,UNKNOWN
+          format: table
+
+      - name: Push Docker image to Artifact Registry
+        run: |
+          docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy $APP_NAME \
+            --image $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_ARTIFACT_REGISTRY/$APP_NAME:latest \
+            --region $GCP_REGION \
+            --platform managed \
+            --allow-unauthenticated
