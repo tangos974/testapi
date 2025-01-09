@@ -28,6 +28,9 @@ resource "google_cloud_run_v2_service" "default" {
   template {
     containers {
       image = "${var.default_region}-docker.pkg.dev/${var.project_id}/${var.app_name}/${var.app_name}:latest"
+      ports {
+        container_port = 80
+      }
     }
     service_account = google_service_account.cloud_run_sa.email
   }
