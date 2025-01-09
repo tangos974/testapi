@@ -17,4 +17,6 @@ dev-dependencies = [
     "httpx>=0.28.1",
     "genbadge>=1.1.1",
     "defusedxml>=0.7.1",
+    "rustworkx>=0.15.1",
+    "checkov>=3.1.47",
 ]
