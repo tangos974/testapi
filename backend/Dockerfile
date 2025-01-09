@@ -40,4 +40,7 @@ COPY ./app ./app
 
 EXPOSE 80
 
+# Health check using python
+HEALTHCHECK CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:80/health')"
+
 CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
