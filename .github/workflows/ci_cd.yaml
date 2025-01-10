@@ -82,7 +82,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest ./backend
+          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest \
+                       -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ github.sha }} \
+                       -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:dev \
+                       ./backend
         
       - name: Scan Docker image for vulnerabilities with Trivy
         uses: aquasecurity/trivy-action@master
@@ -93,7 +96,7 @@ jobs:
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest
+          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_DEV_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }} --all-tags
 
       - name: Deploy to Cloud Run
         run: |
@@ -130,11 +133,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }} ./backend
-          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest ./backend
+          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }} \
+                       -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest \
+                       -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:prod \
+                       ./backend
 
         
       - name: Push Docker image to Artifact Registry tagged with short commit SHA
         run: |
-          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }}
-          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest
+          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }} --all-tags
