@@ -1,7 +1,13 @@
+variable "project_id" {
+  description = "The ID of the GCP project associated to the environment"
+  type        = string
+  default = "test-api-prod"
+}
+
 variable "env_name" {
   description = "The name of the environment"
   type        = string
-  default = "dev"
+  default = "prod"
 }
 
 output "env_name" {
@@ -16,15 +22,6 @@ variable "app_name" {
 
 output "app_name" {
   value = var.app_name
-}
-
-variable "project_id" {
-  description = "The ID of the GCP project associated to the environment"
-  type        = string
-}
-
-output "project_id" {
-  value = var.project_id
 }
 
 variable "default_region" {

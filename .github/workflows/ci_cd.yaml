@@ -75,7 +75,7 @@ jobs:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          credentials_json: ${{ secrets.GCP_DEV_CREDENTIALS }}
 
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev

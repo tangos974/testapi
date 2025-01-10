@@ -26,6 +26,10 @@ resource "google_cloud_run_v2_service" "default" {
   ingress  = "INGRESS_TRAFFIC_ALL"
 
   template {
+      scaling {
+        min_instance_count = 0
+        max_instance_count = 1
+      }
     containers {
       image = "${var.default_region}-docker.pkg.dev/${var.project_id}/${var.app_name}/${var.app_name}:latest"
       ports {
