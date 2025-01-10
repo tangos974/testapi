@@ -126,10 +126,11 @@ jobs:
         run: |
           docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest ./backend
 
-      - name: Tag Docker image with commit sha
+      - name: Get Short Commit SHA
+        id: short_sha
         run: |
-          git_sha=$(git rev-parse --short HEAD)
+          short_sha=$(echo ${{ github.sha }} | cut -c1-7)
         
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:$git_sha
+          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:$short_sha
