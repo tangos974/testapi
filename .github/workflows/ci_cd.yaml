@@ -130,7 +130,8 @@ jobs:
         id: short_sha
         run: |
           short_sha=$(echo ${{ github.sha }} | cut -c1-7)
+          echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
         
-      - name: Push Docker image to Artifact Registry
+      - name: Push Docker image to Artifact Registry tagged with short commit SHA
         run: |
-          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:$short_sha
+          docker push ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }}
