@@ -22,9 +22,9 @@ WORKDIR /home/appuser
 # Stage 2: Code-level dependencies
 FROM builder AS dependencies
 
-# Install dependencies as root
+# Install only prod dependencies as root
 COPY uv.lock pyproject.toml ./
-RUN uv sync --frozen
+RUN uv sync --no-dev
 
 # Was needed for secure & trusted uv installs
 RUN apk del ca-certificates
