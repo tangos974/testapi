@@ -24,7 +24,7 @@ FROM builder AS dependencies
 
 # Install only prod dependencies as root
 COPY uv.lock pyproject.toml ./
-RUN uv sync --no-dev
+RUN uv sync --frozen
 
 # Was needed for secure & trusted uv installs
 RUN apk del ca-certificates
