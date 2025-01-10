@@ -47,14 +47,14 @@ resource "google_project_iam_binding" "run_admin" {
   ]
 }
 
-resource "google_project_iam_binding" "service_account_user" {
-  project = var.project_id
-  role    = "roles/iam.serviceAccountUser"
+# resource "google_project_iam_binding" "service_account_user" {
+#   project = var.project_id
+#   role    = "roles/iam.serviceAccountUser"
 
-  members = [
-    "serviceAccount:${google_service_account.cloud_run_sa.email}"
-  ]
-}
+#   members = [
+#     "serviceAccount:${google_service_account.cloud_run_sa.email}"
+#   ]
+# }
 
 resource "google_cloud_run_v2_service" "default" {
   name     = var.app_name
