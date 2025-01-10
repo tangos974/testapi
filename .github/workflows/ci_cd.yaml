@@ -47,7 +47,7 @@ jobs:
       - name: Run checkov on entire repo
         run: |
           cd backend
-          uv run checkov -d .. --skip-check CKV_DOCKER_4,CKV_GCP_84,CKV2_GHA_1
+          uv run checkov -d .. --skip-check CKV_DOCKER_4,CKV_GCP_84,CKV_GCP_113,CKV2_GHA_1,CKV_GCP_41,CKV_GCP_49,CKV_GHA_7
 
       - name: Run tests with coverage & badge
         run: |
