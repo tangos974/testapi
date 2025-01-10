@@ -103,7 +103,7 @@ resource "google_cloud_run_v2_service" "default" {
         max_instance_count = 10
       }
     containers {
-      image = "${var.default_region}-docker.pkg.dev/${var.project_id}/${var.app_name}/${var.app_name}:latest"
+      image = "${var.default_region}-docker.pkg.dev/${var.project_id}/${var.app_name}/${var.app_name}"
       ports {
         container_port = 80
       }
