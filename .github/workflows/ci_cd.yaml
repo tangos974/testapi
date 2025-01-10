@@ -122,15 +122,16 @@ jobs:
       - name: Configure Docker to use gcloud
         run: gcloud auth configure-docker ${{ vars.GCP_REGION }}-docker.pkg.dev
 
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:latest ./backend
-
       - name: Get Short Commit SHA
         id: short_sha
         run: |
           short_sha=$(echo ${{ github.sha }} | cut -c1-7)
           echo "short_sha=$short_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }} ./backend
+
         
       - name: Push Docker image to Artifact Registry tagged with short commit SHA
         run: |
