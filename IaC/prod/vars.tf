@@ -49,3 +49,9 @@ variable "image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "terraform_state_bucket_name" {
+  description = "The name of the bucket to store terraform state"
+  type        = string
+  default = "tanguys-test-api-tfstate-prod"
+}

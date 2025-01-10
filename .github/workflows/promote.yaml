@@ -26,13 +26,10 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_PROD_CREDENTIALS }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.10.3
-
-      - name: Apply Terraform for Production
+      - name: Update Cloud Run with new image
         run: |
-          cd IaC/prod
-          terraform init
-          terraform apply -auto-approve -var="image_tag=${{ github.event.inputs.tag }}"
+          gcloud run deploy ${{ vars.APP_NAME }} \
+            --image ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ github.event.inputs.tag }} \
+            --region ${{ vars.GCP_REGION }} \
+            --platform managed \
+            --allow-unauthenticated

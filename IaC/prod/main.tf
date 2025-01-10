@@ -47,6 +47,24 @@ resource "google_project_iam_binding" "promote_sa_impersonation" {
   ]
 }
 
+# Make sure promote_sa can tf apply
+resource "google_storage_bucket_iam_binding" "state_bucket_viewer" {
+  bucket = var.terraform_state_bucket_name
+  role   = "roles/storage.objectViewer"
+
+  members = [
+    "serviceAccount:${google_service_account.promote_sa.email}"
+  ]
+}
+resource "google_storage_bucket_iam_binding" "state_bucket_writer" {
+  bucket = var.terraform_state_bucket_name
+  role   = "roles/storage.objectAdmin" # This includes storage.objects.list
+
+  members = [
+    "serviceAccount:${google_service_account.promote_sa.email}"
+  ]
+}
+
 # Empty Service Account for Cloud Run (Not empty has ar access rights)
 resource "google_service_account" "cloud_run_sa" {
   account_id   = "cloud-run-sa"
@@ -78,7 +96,7 @@ resource "google_cloud_run_v2_service" "default" {
   project  = var.project_id
   ingress  = "INGRESS_TRAFFIC_ALL"
 
-  deletion_protection = true
+  deletion_protection = false
   template {
       scaling {
         min_instance_count = 1
