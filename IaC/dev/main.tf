@@ -5,6 +5,7 @@ resource "google_artifact_registry_repository" "default" {
   project       = var.project_id
 }
 
+# Service Account for CI/CD
 resource "google_service_account" "cicd_sa" {
   account_id   = "cicd-sa"
   display_name = "CI/CD Service Account"
@@ -19,6 +20,8 @@ resource "google_project_iam_binding" "artifact_registry_writer" {
     "serviceAccount:${google_service_account.cicd_sa.email}"
   ]
 }
+
+# Service Account for Cloud Run
 resource "google_service_account" "cloud_run_sa" {
   account_id   = "cloud-run-sa"
   display_name = "Cloud Run Service Account"
@@ -30,7 +33,8 @@ resource "google_project_iam_binding" "artifact_registry_access" {
   role    = "roles/artifactregistry.reader"
   project = var.project_id
   members = [
-    "serviceAccount:${google_service_account.cloud_run_sa.email}"
+    "serviceAccount:${google_service_account.cloud_run_sa.email}",
+    "serviceAccount:${google_service_account.cicd_sa.email}"
   ]
 }
 
