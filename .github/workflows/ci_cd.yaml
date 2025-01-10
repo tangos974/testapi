@@ -130,7 +130,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }} ./backend
+          docker build -t ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROD_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REGISTRY }}/${{ vars.APP_NAME }}:${{ steps.short_sha.outputs.short_sha }}:latest ./backend
 
         
       - name: Push Docker image to Artifact Registry tagged with short commit SHA

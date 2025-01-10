@@ -44,12 +44,6 @@ output "default_zone" {
   value = var.default_zone  
 }
 
-variable "image_tag" {
-  description = "The tag of the image to deploy"
-  type        = string
-  default     = "latest"
-}
-
 variable "terraform_state_bucket_name" {
   description = "The name of the bucket to store terraform state"
   type        = string
