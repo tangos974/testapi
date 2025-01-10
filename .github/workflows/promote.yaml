@@ -1,0 +1,33 @@
+name: Promote to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The Docker image tag to promote"
+        required: true
+        default: "latest"
+
+jobs:
+  promote-to-prod:
+    name: Promote Image to Production
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_PROD_CREDENTIALS }}
+
+      - name: Apply Terraform for Production
+        run: |
+          cd IaC/prod
+          terraform init
+          terraform apply -auto-approve -var="image_tag=${{ github.event.inputs.tag }}"

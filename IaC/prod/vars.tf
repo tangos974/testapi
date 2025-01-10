@@ -43,3 +43,9 @@ variable "default_zone" {
 output "default_zone" {
   value = var.default_zone  
 }
+
+variable "image_tag" {
+  description = "The tag of the image to deploy"
+  type        = string
+  default     = "latest"
+}
