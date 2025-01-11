@@ -150,7 +150,7 @@ I therefore chose to use a relatively 'simple' infra to deploy the API on GCP, u
 ### Cost Considerations
 
 Doing cost predictions is always hard, and cloud providers calculators are reputed to provide low price estimates. However, here, even with relatively high traffic (1M requests per month to production) and storage estimates (0.5 GB on Artifact Registry with image sizes of 100MB leaves a LOT of margin, and 0.5 on Cloud Storage for just storing terraform state is a super high estimate).
-With the above, the GCP calculator [gives us a price of less than 0.1 euros per month](https://cloud.google.com/products/calculator?hl=en&dl=CjhDaVEwTXprMk9HUXlZUzFsT1RBNExUUmpOelV0WVdZNE15MDVaV1ZsWW1WaE5qUmtZallRQVE9PRAcGiQ1MDE3MUU1MC0yQjVBLTQzMzEtOUQxNi1EMkFDNkVCQzQ5RUE) of 0.07 euros.
+With the above, the GCP calculator [gives us a price of less than 0.1 euros per month](https://cloud.google.com/products/calculator?hl=en&dl=CjhDaVE1T0RrM1pUUXdOeTAyWkRJeExUUXdZbUV0WW1WbU55MDFOVFV4TldVMFpXRXdZVEVRQVE9PRAcGiQ1MDE3MUU1MC0yQjVBLTQzMzEtOUQxNi1EMkFDNkVCQzQ5RUE) of 0.07 euros.
 Given that it doesn't account for [service-level minimum instances vs per-revision minimum instances](https://cloud.google.com/run/docs/about-instance-autoscaling), the actual cost per month is a little higher, and we can give an estimate from the actual cost of the minimum prod instance being up for a day, as seen in the project dashboard, which is 0.06 euros, for a total monthly cost of 0.06 * 30 + 0.07 = **1.87 euros**.
 
 ## Future Improvements
