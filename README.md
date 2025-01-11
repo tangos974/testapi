@@ -97,9 +97,11 @@ You should now be all set!
 There are two workflows: `ci_cd.yml` and `promote.yml`. 
 
 ### `ci_cd.yml`
-The `ci_cd.yml` workflow can be triggered on:
-1. The `push` event on the `main` branch of either the app code (testapi/backend) or the github actions code (testapi/.github). It runs the following tasks:
-2. Manually, without any further input required, by going [here](https://github.com/tangos974/testapi/actions/workflows/ci_cd.yaml) and clicking the `Run workflow` button. 
+The `ci_cd.yml` workflow can be triggered:
+1. Manually, without any further input required, by going [here](https://github.com/tangos974/testapi/actions/workflows/ci_cd.yaml) and clicking the `Run workflow` button. 
+2. Automatically, on the `push` event on the `main` branch of either the app code (testapi/backend) or the github actions code (testapi/.github).
+
+It runs the following tasks:
 
 #### CI and QA
 - Set up python dev env and all QA tools using uv
@@ -109,7 +111,7 @@ The `ci_cd.yml` workflow can be triggered on:
   - pylint badge: ![Pylint Score](.github/pylint-badge.svg)
   - coverage badge: ![Coverage](.github/coverage.svg)
 
-- Scan the entire repo for miscellaneaous vulnerabilities, bad practices, and security issues using [Checkov](https://github.com/bridgecrewio/checkov)
+- Scan the entire repo for miscellaneaous vulnerabilities, bad practices, secret leaks and security issues using [Checkov](https://github.com/bridgecrewio/checkov)
 
 #### CD
 - Build the docker image for the backend service
