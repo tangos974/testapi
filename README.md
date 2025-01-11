@@ -111,11 +111,11 @@ It runs the following tasks:
   - pylint badge: ![Pylint Score](.github/pylint-badge.svg)
   - coverage badge: ![Coverage](.github/coverage.svg)
 
-- Scan the entire repo for miscellaneaous vulnerabilities, bad practices, secret leaks and security issues using [Checkov](https://github.com/bridgecrewio/checkov)
+- Scan the entire repo for miscellaneaous vulnerabilities, bad practices, secret leaks and security issues using [Checkov](https://github.com/bridgecrewio/checkov). This step is breaking, i.e. if any vulnerability is found, the entire workflow will fail.
 
 #### CD
 - Build the docker image for the backend service
-- Scan the docker image for vulnerabilities using [Trivy](https://github.com/aquasecurity/trivy), this step is breaking, i.e. if any vulnerability is found, the build will fail
+- Scan the docker image for vulnerabilities using [Trivy](https://github.com/aquasecurity/trivy). Also breaking if ANY vuln found.
 - Push the docker image to both GCP projects' Artifact Registries, tagged with a shortened version of the triggering commit SHA
 - Deploy the backend service to Cloud Run **only for the dev project**
 
