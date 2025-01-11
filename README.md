@@ -134,6 +134,7 @@ I therefore chose to use a relatively 'simple' infra to deploy the API on GCP, u
 - Using Cloud Run early in the app development process enforces good devops practices which helps a ton in the long run, like keeping stateless services decoupled (or as loosely coupled as possible), keeping them small and shortlived.
 - For example, the Dockerfile for the backend was optimized down to a sub 3 seconds build time without cache and a size of less than 100MB, with subsequent dev builds taking less than 1 second. Not only is precious developer time saved, but if we were to run thousands of equivalent containers in the future on a Kubernetes cluster, the overall infrastructure would be much more efficient in terms of cost and performance.
 (Tools used to achieve this included docker scout, dive, trivy, checkov)
+- It also allows for a finer control over cost, as for example the development project scales down to zero when not in use, whereas the production project has instant response time thanks to a minimum instance count of 1. Since Cloud Run costs  
 
 ### CI/CD Choices
 
@@ -144,7 +145,14 @@ I therefore chose to use a relatively 'simple' infra to deploy the API on GCP, u
 - The CI/CD using of the pipeline is kept as lean and simple as possible, with a single trigger for the main branch of the app and a single trigger for the main branch of the github actions repository. The percentage of areas of the SLDC it covers on the other hand, is expanded as much as possible to take away the repetitivity and automate all that can be away from engineers.
 - This is also somewhat of an 'intern-compatible' solution, as a developper with no knowledge of gcloud or terraform would still be able to make functional alterations, deployments, and rollbacks without having to write a single cli command.
 
+### Cost Considerations
+
+Doing cost predictions is always hard, and cloud providers calculators are reputed to provide low price estimates. However, here, even with relatively high traffic (1M requests per month to production) and storage (0.5 GB on Artifact Registry with image sizes of 100MB leaves a LOT of margin, and 0.5 on Cloud Storage for just storing terraform state is a super high estimate).
+With the above, the GCP calculator [gives us a price of less than 0.1 euros per month](https://cloud.google.com/products/calculator?hl=en&dl=CjhDaVEwTXprMk9HUXlZUzFsT1RBNExUUmpOelV0WVdZNE15MDVaV1ZsWW1WaE5qUmtZallRQVE9PRAcGiQ1MDE3MUU1MC0yQjVBLTQzMzEtOUQxNi1EMkFDNkVCQzQ5RUE) of 0.07 euros.
+Given that it doesn't account for [service-level minimum instances vs per-revision minimum instances](https://cloud.google.com/run/docs/about-instance-autoscaling), the actual cost per month is a little higher, and we can give an estimate from the actual cost of the minimum prod instance being up for a day, as seen in the project dashboard, which is 0.06 euros, for a total monthly cost of 0.06 * 30 + 0.07 = **1.87 euros**.
+
 ## Future Improvements
 
+- Automatically named and versioned releases, from either code-level tools ([bump2version](https://github.com/c4urself/bump2version) comes to mind for Python) or service-level tools (like [semantic-release](https://github.com/semantic-release/semantic-release)). This would be absolutely crucial if this service was a small part of a larger app, needing to interact with other services or other parts of the app - in that case, one needs to know which versions of all services are currently running to make sure they are compatible. Since here, our 'app' is in fact a single backend service, there is no need to worry about compatibility, hence versionned releases are just a matter of convenience.
 - Implement a monitoring solution to alert on failures, and have an automatic rollback process for prod deploys to allow for a controlled recovery of the live service in case of failure.
 - A load balancer in front of the prod service would allow finer control over the deployment strategy (Canary, Blue/Green, etc.)
