@@ -105,7 +105,7 @@ It runs the following tasks:
 
 #### CI and QA
 - Set up python dev env and all QA tools using uv
-- Run unit tests, linting, and code coverage checks on the backend service (non-breaking, meaning it does not break the build if some of the tests fail, they are just there to get feedback)
+- Run unit tests, linting, and code coverage checks on the backend service (non-breaking, meaning it does not stop the workflow if some of the tests fail, they are just there to get feedback)
 - Generate dynamic badges from the result and push them to the repo:
 
   - pylint badge: ![Pylint Score](.github/pylint-badge.svg)
