@@ -136,7 +136,7 @@ I therefore chose to use a relatively 'simple' infra to deploy the API on GCP, u
 - Using Cloud Run early in the app development process enforces good devops practices which helps a ton in the long run, like keeping stateless services decoupled (or as loosely coupled as possible), keeping them small and shortlived.
 - For example, the Dockerfile for the backend was optimized down to a sub 3 seconds build time without cache and a size of less than 100MB, with subsequent dev builds taking less than 1 second. Not only is precious developer time saved, but if we were to run thousands of equivalent containers in the future on a Kubernetes cluster, the overall infrastructure would be much more efficient in terms of cost and performance.
 (Tools used to achieve this included docker scout, dive, trivy, checkov)
-- It also allows for a finer control over cost, as for example the development project scales down to zero when not in use, whereas the production project has instant response time thanks to a minimum instance count of 1. Since Cloud Run costs  
+- It also allows for a finer control over cost, as for example the development project scales down to zero when not in use, whereas the production project has instant response time thanks to a minimum instance count of 1.
 
 ### CI/CD Choices
 
