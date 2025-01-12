@@ -16,7 +16,7 @@ The backend is written in **Python** using **FastAPI** and **uv** for tooling an
 - `GET /hello`: Returns `{ "message": "Hello, World!" }`
 - `GET /health`: Returns `{ "status": "ok" }`
 
-Deployed on two different GCP project, one for **development**, which you can see [here](https://tanguys-test-api-836961496858.europe-west1.run.app/docs) and one for **production**, [here](https://tanguys-test-api-1036377815254.europe-west1.run.app/docs). The infrastructure is built using **Google Compute Engine (GCR)**,  the setup emphasizes security, automation, and scalability.
+Deployed on two different GCP project, one for **development**, which you can see [here](https://tanguys-test-api-836961496858.europe-west1.run.app/docs) and one for **production**, [here](https://tanguys-test-api-1036377815254.europe-west1.run.app/docs). The infrastructure is built using **Google Cloud Run (GCR)**,  the setup emphasizes security, automation, and scalability.
 
 ---
 
