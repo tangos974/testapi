@@ -1,9 +1,9 @@
-# Webyn DevOps Case Study: TestAPI
+# DevOps Case Study: TestAPI
 
 ![Coverage](.github/pylint-badge.svg)
 ![Pylint Score](.github/coverage.svg)
 
-This repository contains my submission for the Webyn DevOps technical challenge. It includes a deployed lightweight API application hosted on Google Cloud Platform (GCP).
+This repository contains my submission for the DevOps technical challenge. It includes a deployed lightweight API application hosted on Google Cloud Platform (GCP).
 
 ---
 
