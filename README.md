@@ -3,7 +3,7 @@
 ![Coverage](.github/pylint-badge.svg)
 ![Pylint Score](.github/coverage.svg)
 
-This repository contains my submission for the DevOps technical challenge. It includes a deployed lightweight API application hosted on Google Cloud Platform (GCP).
+This repository represents a relatively simple junior to mid level DevOps use-case. It includes a CICD deployment for a lightweight API application hosted on Google Cloud Platform (GCP), with IaC.
 
 ---
 
