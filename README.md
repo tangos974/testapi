@@ -37,12 +37,13 @@ Deployed on two different GCP project, one for **development**, which you can se
    git clone https://github.com/tangos974/testapi
    cd testapi
    ```
-
-2. Create two GCP projects, one for **development** and one for **production**, enable required services in each project:
+2. Create two GCP projects*, one for **development** and one for **production**, enable required services in each project:
 
    ```bash
    gcloud services $project_id enable run.googleapis.com artifactregistry.googleapis.com
    ```
+
+   *Since my implementation of this project was done on a trial account, projects folders weren't available as they require a billing account, but [you should definitely put two projects representing envs of the same app in a single project folder](https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy#resource-hierarchy-detail).
 
 3. Create buckets for Terraform state in each project:
 
@@ -51,7 +52,6 @@ Deployed on two different GCP project, one for **development**, which you can se
    --default-storage-class=standard \
    --location=europe-west1
    ```
-
 4. Initialize Terraform in each project to make sure installation was done right:
 
    ```bash
@@ -59,21 +59,19 @@ Deployed on two different GCP project, one for **development**, which you can se
    tf -chdir=./dev init
    tf -chdir=./prod init
    ```
-
 5. Run Terraform in each project:
 
    ```bash
    tf -chdir=./dev apply
    tf -chdir=./prod apply
    ```
-
 6. Generate a service account key for the CI/CD service account in each project:
 
    ```bash
    gcloud iam service-accounts create cloud-run-sa \
    --description="Service account for CI/CD deployments" \
    --display-name="CI/CD Deployment Service Account"
-   ````
+   ```
 
 Store the JSON key as secrets in Github Actions, and also add the following environment variables:
 
@@ -81,45 +79,50 @@ Store the JSON key as secrets in Github Actions, and also add the following envi
     APP_NAME: tanguys-test-api
 
     GCP_ARTIFACT_REGISTRY: tanguys-test-api
-        
+      
     GCP_DEV_PROJECT_ID: esoteric-dryad-447111-t9
-        
+      
     GCP_PROD_PROJECT_ID: test-api-prod
-        
+      
     GCP_REGION: europe-west1
 ```
+
 You can replace `esoteric-dryad-447111-t9` and `test-api-prod` with your own project IDs, and the other variables with whatever you like, just make sure you also update the two `vars.tf` files in the subdirectories of `IaC` if you change them.
 
 You should now be all set!
 
 ## Workflows Github Actions
 
-There are two workflows: `ci_cd.yml` and `promote.yml`. 
+There are two workflows: `ci_cd.yml` and `promote.yml`.
 
 ### `ci_cd.yml`
+
 The `ci_cd.yml` workflow can be triggered:
-1. Manually, without any further input required, by going [here](https://github.com/tangos974/testapi/actions/workflows/ci_cd.yaml) and clicking the `Run workflow` button. 
+
+1. Manually, without any further input required, by going [here](https://github.com/tangos974/testapi/actions/workflows/ci_cd.yaml) and clicking the `Run workflow` button.
 2. Automatically, on the `push` event on the `main` branch of either the app code (testapi/backend) or the github actions code (testapi/.github).
 
 It runs the following tasks:
 
 #### CI and QA
+
 - Set up python dev env and all QA tools using uv
 - Run unit tests, linting, and code coverage checks on the backend service (non-breaking, meaning it does not stop the workflow if some of the tests fail, they are just there to get feedback)
 - Generate dynamic badges from the result and push them to the repo:
 
   - pylint badge: ![Pylint Score](.github/pylint-badge.svg)
   - coverage badge: ![Coverage](.github/coverage.svg)
-
 - Scan the entire repo for miscellaneaous vulnerabilities, bad practices, secret leaks and security issues using [Checkov](https://github.com/bridgecrewio/checkov). This step is breaking, i.e. if any vulnerability is found, the entire workflow will fail.
 
 #### CD
+
 - Build the docker image for the backend service
 - Scan the docker image for vulnerabilities using [Trivy](https://github.com/aquasecurity/trivy). Also breaking if ANY vuln found.
 - Push the docker image to both GCP projects' Artifact Registries, tagged with a shortened version of the triggering commit SHA
 - Deploy the backend service to Cloud Run **only for the dev project**
 
 ### `promote.yml`
+
 The `promote.yml` workflow can only be triggered manually, by going [here](https://github.com/tangos974/testapi/actions/workflows/promote.yaml) and clicking the `Run workflow` button, it requires a single input, the tag of the docker image to promote.
 
 Its only action is to update the Cloud Run service in the production project with the desired version of the backend service.
@@ -129,13 +132,15 @@ Its only action is to update the Cloud Run service in the production project wit
 Since the app is so simple, I assumed it was a very early stage proof of concept.
 
 ### Infra Choices
+
 I therefore chose to use a relatively 'simple' infra to deploy the API on GCP, using Cloud Run, to focus on setting up a seamless CI/CD pipeline. The reasoning is the following:
+
 - Doing a more complex infra, like a GKE or GCE instance for example, is overkill for a single, stateless service.
 - By using a simpler infra, we can focus more on the CI/CD pipeline which allow developers to have their code automatically tested, reviewed, scanned for vulnerabilities and deployed.
-- Least priviledged IAM roles and service accounts were easily set up to reduce the attack surface of the deployed service. 
+- Least priviledged IAM roles and service accounts were easily set up to reduce the attack surface of the deployed service.
 - Using Cloud Run early in the app development process enforces good devops practices which helps a ton in the long run, like keeping stateless services decoupled (or as loosely coupled as possible), keeping them small and shortlived.
 - For example, the Dockerfile for the backend was optimized down to a sub 3 seconds build time without cache and a size of less than 100MB, with subsequent dev builds taking less than 1 second. Not only is precious developer time saved, but if we were to run thousands of equivalent containers in the future on a Kubernetes cluster, the overall infrastructure would be much more efficient in terms of cost and performance.
-(Tools used to achieve this included docker scout, dive, trivy, checkov)
+  (Tools used to achieve this included docker scout, dive, trivy, checkov)
 - It also allows for a finer control over cost, as for example the development project scales down to zero when not in use, whereas the production project has instant response time thanks to a minimum instance count of 1.
 
 ### CI/CD Choices
